@@ -1,0 +1,63 @@
+Błąd odpowiedź A : Jakie są przyczyny:
+
+Błędna nazwa tabeli lub schematu – Baza danych PostgreSQL próbuje znaleźć tabelę cregisters.creg, ale albo sama tabela (creg) nie istnieje w schemacie cregisters, albo schemat cregisters nie istnieje w bazie danych.
+Brak schematu w bazie danych – Jeśli struktura bazy danych została zmodyfikowana, np. poprzez usunięcie schematu cregisters, może to być przyczyną problemu.
+Problemy z konfiguracją bazy danych – Może to wynikać z niewłaściwego ustawienia połączenia z bazą danych lub nieprawidłowego dostępu do odpowiednich schematów.
+
+Rozwiązanie: sprawdzenie istnienia tabeli i schematu - upewnienie sięże zarówno tabela creg, jak i schemat cregisters istnieją w bazie danych. W PostgreSQL można to zrobić za pomocą
+
+skryptu SQL
+SELECT *
+FROM information_schema.tables
+WHERE table_schema = 'cregisters'
+  AND table_name = 'creg';
+Jeśli wynik będzie pusty, oznacza to, że tabela lub schemat nie istnieją i trzeba je utworzyć lub poprawić nazwę w kodzie.
+
+Dostosowanie zapytania SQL – Jeśli tabela istnieje, ale jej nazwa jest inna, konieczne może być poprawienie zapytania w kodzie aplikacji. Należy także sprawdzić, czy zapytanie nie zawiera literówki.
+
+Tworzenie schematu lub tabeli – Jeśli schemat cregisters i tabela creg są potrzebne, a ich brakuje, można je utworzyć przy użyciu  kodu SQL:
+
+CREATE SCHEMA IF NOT EXISTS cregisters;
+CREATE TABLE IF NOT EXISTS cregisters.creg (...);
+ Jeżeli schemat cregisters istnieje, ale użytkownik nie ma do niego dostępu, można spróbować dodać schemat do ścieżki wyszukiwania w kozie SQL:
+
+ SET search_path TO cregisters;
+
+Błąd odpowiedź B : Jakie są przyczyny:
+
+Nieprawidłowa data wniosku, brak lub niepełna informacja o okresie zatrudnienia, błąd logiki w kodzie
+
+Rozwiązanie błędu: zweryfikowanie czy daty zatrudnienia: kod SQL:
+
+SELECT *
+FROM okres_zatrudnienia
+WHERE user_id = :user_id
+  AND :wniosek_data BETWEEN data_rozpoczecia AND data_zakonczenia;
+
+Błąd odpowiedź C : Jakie są przyczyny: Nieprawidłowy typ danych – Wartość "30B" zawiera znak alfanumeryczny, co jest przyczyną tego, iż nie jest poprawnym INTEGER (liczba całkowita).
+ Błąd przy mapowaniu danych wejściowych – Jeśli wartość ta pochodzi z formularza lub innego wejścia użytkownika, mogła być błędnie wpisana lub nieprawidłowo przetworzona przed zapisem do bazy.
+ Niewłaściwe oczekiwania co do formatu danych – Kod aplikacji może przyjmować wartość, która jest formatem mieszanym (np. liczba z literą, jak "30B"), ale zapisywać ją w kolumnie o typie INTEGER.
+
+ Rozwiązanie błędu: walidacja danych przed ich zapisaniem, konwersja danych lub ich oczyszczenie, usunięcie litery albo przetworzenie wartości przed zapisaniem
+
+ kod SQL: ALTER TABLE nazwa_tabeli
+          ALTER COLUMN nazwa_kolumny TYPE TEXT;
+
+kod PHP: $value = "30B";
+         $number = (int) preg_replace("/[^0-9]/", "", $wartosc);
+
+         echo $number;
+
+Błąd odpowiedź D: Błąd eskportu danych z systemu ERP
+
+Jakie są przyczyny: Brak odpowiednich uprawnień, błędy w konfiguracji, problemy z połączeniem, niekompatybilne dane
+
+Rozwiązanie błędu: sprawdzenie uprawnień użytkownika, poprawienie konfiguracji, przejrzenie logów, przetestowanie z miejszą ilością danych
+
+Błąd odpowiedź E: problem załadowania zasobu w przeglądarce, np. grafiki, skryptu CSS, Javascript
+
+Jakie są przyczyny błędu: niepoprawny adres URL zasobu, blokada w przeglądarce(Jascript), problem serwera -
+niedostępny, odrzuca połączenia, potencjalne błędy w przeglądarce, problemy z SSL- – Jeżeli zasób jest ładowany przez HTTPS, a certyfikat SSL jest nieprawidłowy lub wygasł, przeglądarka może zablokować jego załadowanie
+
+Rozwiązanie błędu: sprawdzić adres URL zasobu, wyłączyć blokady w przeglądarce, zweryfikować certyfikat SSL, użyć narzędzi do debugowania
+w przeglądarce, odświeżyć przeglądrkę
